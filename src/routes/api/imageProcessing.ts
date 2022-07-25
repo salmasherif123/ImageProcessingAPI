@@ -13,7 +13,7 @@ IP.get('/', async (req, res) => {
   height = req.query.height as string
   imageName = req.query.name as string
   if (imageName === undefined) {
-    res.status(406).send("Bad request, query parameter 'name' is missing")
+    res.status(400).send("Bad request, query parameter 'name' is missing")
   } else if (original.includes(imageName + '.jpg') === false) {
     res.status(406).send(`${imageName}.jpg does not exist`)
   } else {
