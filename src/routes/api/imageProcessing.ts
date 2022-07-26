@@ -9,14 +9,14 @@ import {
 import path from 'path'
 const IP = express.Router()
 let width: string, height: string, imageName: string
-IP.get('/', async (req: Request, res: Response): Promise<void> => {
+IP.get('/', async (req: Request, res: Response):Promise<void> => {
   width = req.query.width as string
   height = req.query.height as string
   imageName = req.query.name as string
   const dir = getImageDir(__dirname)
   const resizedImgPath = path.join(dir, 'resized')
   if (imageName === undefined) {
-    res.sendStatus(400).send("Bad request, query parameter 'name' is missing")
+    res.status(400).send("Bad request, query parameter 'name' is missing")
   } else if (original.includes(imageName + '.jpg') === false) {
     res.status(406).send(`${imageName}.jpg does not exist`)
   } else {
@@ -39,17 +39,14 @@ IP.get('/', async (req: Request, res: Response): Promise<void> => {
       if (!width && !height) {
         res.sendFile(`${dir}/${imageName}.jpg`)
       } else {
-        if (
-          isNaN(parseInt(width)) &&
-          width &&
-          isNaN(parseInt(height)) &&
-          height
-        ) {
+        if ((isNaN(parseInt(width)) && width) && (isNaN(parseInt(height)) && height)) {
           res.status(400).json('Warning: width and height must be numbers')
-        } else if (isNaN(parseInt(width)) && width) {
+        }
+        else if ((isNaN(parseInt(width)) && width)) {
           res.status(400).json('Warning: width must be a number')
-        } else if (isNaN(parseInt(height)) && height) {
-          res.status(400).json('Warning: height must be a number')
+        }
+        else if ((isNaN(parseInt(height)) && height)) {
+        res.status(400).json('Warning: height must be a number')
         }
       }
     }
