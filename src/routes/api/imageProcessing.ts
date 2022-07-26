@@ -9,7 +9,7 @@ import {
 import path from 'path'
 const IP = express.Router()
 let width: string, height: string, imageName: string
-IP.get('/', async (req: Request, res: Response):Promise<void> => {
+IP.get('/', async (req: Request, res: Response): Promise<void> => {
   width = req.query.width as string
   height = req.query.height as string
   imageName = req.query.name as string
@@ -39,14 +39,17 @@ IP.get('/', async (req: Request, res: Response):Promise<void> => {
       if (!width && !height) {
         res.sendFile(`${dir}/${imageName}.jpg`)
       } else {
-        if ((isNaN(parseInt(width)) && width) && (isNaN(parseInt(height)) && height)) {
+        if (
+          isNaN(parseInt(width)) &&
+          width &&
+          isNaN(parseInt(height)) &&
+          height
+        ) {
           res.status(400).json('Warning: width and height must be numbers')
-        }
-        else if ((isNaN(parseInt(width)) && width)) {
+        } else if (isNaN(parseInt(width)) && width) {
           res.status(400).json('Warning: width must be a number')
-        }
-        else if ((isNaN(parseInt(height)) && height)) {
-        res.status(400).json('Warning: height must be a number')
+        } else if (isNaN(parseInt(height)) && height) {
+          res.status(400).json('Warning: height must be a number')
         }
       }
     }
