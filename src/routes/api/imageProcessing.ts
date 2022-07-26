@@ -1,71 +1,57 @@
-import express from 'express'
+import express, { Request, Response } from 'express'
 import { original, resized } from '../../images/imagesName'
 import {
   resizeImage,
   resizeHeight,
   resizeWidth,
+  getImageDir
 } from '../../utilities/functionalities'
+import path from 'path'
 const IP = express.Router()
-
 let width: string, height: string, imageName: string
-IP.get('/', async (req, res) => {
+IP.get('/', async (req: Request, res: Response): Promise<void> => {
   width = req.query.width as string
   height = req.query.height as string
   imageName = req.query.name as string
+  const dir = getImageDir(__dirname)
+  const resizedImgPath = path.join(dir, 'resized')
   if (imageName === undefined) {
-    res.status(406).send("Bad request, query parameter 'name' is missing")
+    res.sendStatus(400).send("Bad request, query parameter 'name' is missing")
   } else if (original.includes(imageName + '.jpg') === false) {
     res.status(406).send(`${imageName}.jpg does not exist`)
   } else {
-    if (width === undefined && typeof height === 'string') {
-      let flag: Boolean = false
+    if (isNaN(parseInt(width)) && !isNaN(parseInt(height))) {
       if (!resized.includes(`${imageName}_Height${height}.jpg`)) {
-        try {
-          await resizeHeight(imageName, height)
-        } catch (error) {
-          flag = true
-          res.status(406).send(error)
-        }
+        await resizeHeight(imageName, height)
       }
-      if (!flag) {
-        res.sendFile(
-          `D:/vscode/imageProcessingProject/src/images/images/resized/${imageName}_Height${height}.jpg`
-        )
-      }
-    } else if (height === undefined && typeof width === 'string') {
-      let flag: Boolean = false
+      res.sendFile(`${resizedImgPath}/${imageName}_Height${height}.jpg`)
+    } else if (isNaN(parseInt(height)) && !isNaN(parseInt(width))) {
       if (!resized.includes(`${imageName}_Width${width}.jpg`)) {
-        try {
-          await resizeWidth(imageName, width)
-        } catch (error) {
-          res.status(406).send(error)
-          flag = true
-        }
+        await resizeWidth(imageName, width)
       }
-      if (!flag) {
-        res.sendFile(
-          `D:/vscode/imageProcessingProject/src/images/images/resized/${imageName}_Width${width}.jpg`
-        )
-      }
-    } else if (width !== undefined && height !== undefined) {
-      let flag: Boolean = false
+      res.sendFile(`${resizedImgPath}/${imageName}_Width${width}.jpg`)
+    } else if (!isNaN(parseInt(width)) && !isNaN(parseInt(height))) {
       if (!resized.includes(`${imageName}_${width}_${height}.jpg`)) {
-        try {
-          await resizeImage(imageName, width, height)
-        } catch (error) {
-          flag = true
-          res.status(406).send(error)
+        await resizeImage(imageName, width, height)
+      }
+      res.sendFile(`${resizedImgPath}/${imageName}_${width}_${height}.jpg`)
+    } else {
+      if (!width && !height) {
+        res.sendFile(`${dir}/${imageName}.jpg`)
+      } else {
+        if (
+          isNaN(parseInt(width)) &&
+          width &&
+          isNaN(parseInt(height)) &&
+          height
+        ) {
+          res.status(400).json('Warning: width and height must be numbers')
+        } else if (isNaN(parseInt(width)) && width) {
+          res.status(400).json('Warning: width must be a number')
+        } else if (isNaN(parseInt(height)) && height) {
+          res.status(400).json('Warning: height must be a number')
         }
       }
-      if (!flag) {
-        res.sendFile(
-          `D:/vscode/imageProcessingProject/src/images/images/resized/${imageName}_${width}_${height}.jpg`
-        )
-      }
-    } else if (width === undefined && height === undefined) {
-      res.sendFile(
-        `D:/vscode/imageProcessingProject/src/images/images/${imageName}.jpg`
-      )
     }
   }
 })

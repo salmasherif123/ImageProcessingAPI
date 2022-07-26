@@ -25,14 +25,14 @@ describe('API Server Testing', () => {
         const res = await request.get(`/api/imageprocessing?name=${invalidImageName}`);
         expect(res.status).toBe(406);
     });
-    it('width and height data type correctness & image existance', async () => {
+    it('resized image with both width and height existance', async () => {
         const imagePath = path_1.default.join(url, `${validImageName}_${width}_${height}.jpg`);
         const res = await request.get(`/api/imageprocessing?name=${validImageName}&width=${width}&height=${height}`);
         expect(res.status).toBe(200);
         const isExist = fs_1.default.existsSync(imagePath);
         expect(isExist).toBeTrue();
     });
-    it('width data type correctness and image existance', async () => {
+    it('resized image with width existance', async () => {
         height = undefined;
         const imagePath = path_1.default.join(url, `${validImageName}_Width${width}.jpg`);
         const res = await request.get(`/api/imageprocessing?name=${validImageName}&width=${width}`);
@@ -41,13 +41,23 @@ describe('API Server Testing', () => {
         expect(isExist).toBeTrue();
         height = 400;
     });
-    it('height data type correctness and image existance', async () => {
-        width = undefined;
-        const imagePath = path_1.default.join(url, `${validImageName}_Height${height}.jpg`);
+    it('resized image with height existance', async () => {
         const res = await request.get(`/api/imageprocessing?name=${validImageName}&height=${height}`);
         expect(res.status).toBe(200);
-        const isExist = fs_1.default.existsSync(imagePath);
-        expect(isExist).toBeTrue();
-        width = 300;
+    });
+    it('data type correctness', async () => {
+        const w = 'a', h = 'a';
+        if (isNaN(parseInt(w)) && w) {
+            const res = await request.get(`/api/imageprocessing?name=${validImageName}&width=${w}`);
+            expect(res.status).toBe(400);
+        }
+        if (isNaN(parseInt(h)) && h) {
+            const res = await request.get(`/api/imageprocessing?name=${validImageName}&height=${h}`);
+            expect(res.status).toBe(400);
+        }
+        if (isNaN(parseInt(w)) && w && isNaN(parseInt(h)) && h) {
+            const res = await request.get(`/api/imageprocessing?name=${validImageName}&width=${w}&height=${h}`);
+            expect(res.status).toBe(400);
+        }
     });
 });

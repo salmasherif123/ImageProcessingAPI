@@ -31,14 +31,14 @@
     "gm": "^1.23.1",
     "nodemon": "^2.0.19",
     "prettier": "^2.7.1",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "supertest": "^6.2.4",
+    "nodeman": "^1.1.2",
+    "jasmine": "^4.2.1",
+    "jasmine-spec-reporter": "^7.0.0"
   },
   "dependencies": {
     "express": "^4.18.1",
-    "jasmine": "^4.2.1",
-    "jasmine-spec-reporter": "^7.0.0",
-    "nodeman": "^1.1.2",
-    "sharp": "^0.30.7",
-    "supertest": "^6.2.4"
+    "sharp": "^0.30.7"
   }
 }
