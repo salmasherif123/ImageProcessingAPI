@@ -49,3 +49,31 @@ This project about image processing api
  *using filename **fs** and path **path** libraries*
  
 * **`getImageDir(args)` for getting the directory of the image**
+
+## Access EndPoints 
+
+* Main URL `http://localhost:3000/` : returns text message 
+
+### /api
+
+`http://localhost:3000/api` : returns text message 
+
+###  /api/imageprocessing
+
+`http://localhost:3000/api/imageprocessing` : returns bad request because it requires query string consists of image name at least
+
+### /api/imageprocessing?name=*imageName*
+
+`http://localhost:3000/api/imageprocessing?name=imageName` : returns 200 ok and the required image
+
+### /api/imageprocessing?name=*imageName*&width=*width*&height=*height*
+
+`http://localhost:3000/api/imageprocessing?name=imageName&width=width&height=height` : return resized image 
+
+### /api/imageprocessing?name=*imageName*&width=*width*
+
+`http://localhost:3000/api/imageprocessing?name=imageName&width=width` : return resized image with width only
+
+### /api/imageprocessing?name=*imageName*&height=*height*
+
+`http://localhost:3000/api/imageprocessing?name=imageName&height=height` : return resized image with height only
