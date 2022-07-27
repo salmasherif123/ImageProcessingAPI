@@ -3,15 +3,15 @@ import supertest from 'supertest'
 import app from '../../../index'
 import path from 'path'
 import fs from 'fs'
-import { getImageDir } from '../../../utilities/functionalities'
+import { getImageDir, resizeImage } from '../../../utilities/functionalities'
 const request = supertest(app)
 const dir = getImageDir(__dirname)
 describe('API Server Testing', () => {
   const validImageName: string = 'icelandwaterfall'
   const invalidImageName = 'invalid'
   const url = path.join(dir, 'resized')
-  const width: undefined | number = 300
-  let height: undefined | number = 400
+  const width: undefined | number |string = 300
+  let height: undefined | number |string = 500
   it('valid file name', async () => {
     const res = await request.get('/api/imageprocessing?name=' + validImageName)
     expect(res.status).toBe(200)
@@ -21,6 +21,13 @@ describe('API Server Testing', () => {
       `/api/imageprocessing?name=${invalidImageName}`
     )
     expect(res.status).toBe(406)
+  })
+  it('resize image function', async() => {
+    await resizeImage(validImageName, width as unknown as string, height as unknown as string)
+    let imagePath = `${validImageName}_${width}_${height}.jpg` 
+    imagePath = path.join(dir, 'resized', imagePath)
+    const isExists = fs.existsSync(imagePath)
+    expect(isExists).toBeTrue()
   })
   it('resized image with both width and height existance', async () => {
     const imagePath = path.join(url, `${validImageName}_${width}_${height}.jpg`)

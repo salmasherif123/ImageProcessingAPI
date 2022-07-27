@@ -15,8 +15,8 @@ describe('API Server Testing', () => {
     const validImageName = 'icelandwaterfall';
     const invalidImageName = 'invalid';
     const url = path_1.default.join(dir, 'resized');
-    let width = 300;
-    let height = 400;
+    const width = 300;
+    let height = 500;
     it('valid file name', async () => {
         const res = await request.get('/api/imageprocessing?name=' + validImageName);
         expect(res.status).toBe(200);
@@ -24,6 +24,13 @@ describe('API Server Testing', () => {
     it('invalid file name', async () => {
         const res = await request.get(`/api/imageprocessing?name=${invalidImageName}`);
         expect(res.status).toBe(406);
+    });
+    it('resize image function', async () => {
+        await (0, functionalities_1.resizeImage)(validImageName, width, height);
+        let imagePath = `${validImageName}_${width}_${height}.jpg`;
+        imagePath = path_1.default.join(dir, 'resized', imagePath);
+        const isExists = fs_1.default.existsSync(imagePath);
+        expect(isExists).toBeTrue();
     });
     it('resized image with both width and height existance', async () => {
         const imagePath = path_1.default.join(url, `${validImageName}_${width}_${height}.jpg`);
@@ -46,7 +53,8 @@ describe('API Server Testing', () => {
         expect(res.status).toBe(200);
     });
     it('data type correctness', async () => {
-        const w = 'a', h = 'a';
+        const w = 'a';
+        const h = 'a';
         if (isNaN(parseInt(w)) && w) {
             const res = await request.get(`/api/imageprocessing?name=${validImageName}&width=${w}`);
             expect(res.status).toBe(400);
